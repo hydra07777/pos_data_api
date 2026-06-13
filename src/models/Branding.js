@@ -8,9 +8,9 @@ module.exports = (sequelize) =>
         'Branding',
         {
             id: { type: DataTypes.INTEGER, primaryKey: true, defaultValue: 1 },
-            companyName: { type: DataTypes.STRING(120), allowNull: false, defaultValue: 'BRIKIN', field: 'company_name' },
+            companyName: { type: DataTypes.STRING(120), allowNull: false, defaultValue: 'JOAC', field: 'company_name' },
             tagline: { type: DataTypes.STRING(200), allowNull: false, defaultValue: 'Specialty drinks & more' },
-            logoText: { type: DataTypes.STRING(6), allowNull: false, defaultValue: 'P', field: 'logo_text' },
+            logoText: { type: DataTypes.STRING(6), allowNull: false, defaultValue: 'J', field: 'logo_text' },
             primaryColor: { type: DataTypes.STRING(7), allowNull: false, defaultValue: '#f6905f', field: 'primary_color' },
             secondaryColor: { type: DataTypes.STRING(7), allowNull: false, defaultValue: '#fdebe1', field: 'secondary_color' },
             idNat: { type: DataTypes.STRING(50), allowNull: false, defaultValue: '01-G4701-N25076X', field: 'id_nat' },
