@@ -1,7 +1,15 @@
 // ============================================================
 // Environment configuration — loaded once and exported
 // ============================================================
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({
+    // Resolve the .env file relative to *this* file so that
+    // `node src/seeders/run.js` and `npm run seed` (which run
+    // from different working directories) both find the same
+    // config. The .env lives in `server/.env` regardless of
+    // where the project is cloned.
+    path: path.resolve(__dirname, '..', '..', '.env'),
+});
 
 const toInt = (v, def) => (v == null || v === '' ? def : parseInt(v, 10));
 const toFloat = (v, def) => (v == null || v === '' ? def : parseFloat(v));
@@ -22,13 +30,14 @@ module.exports = {
     },
 
     db: {
-        dialect: (process.env.DB_DIALECT || 'sqlite').toLowerCase(),
+        // Default to MySQL (the supported dialect in database.js).
+        dialect: (process.env.DB_DIALECT || 'mysql').toLowerCase(),
         storage: process.env.DB_STORAGE || './data/pos-brikin.sqlite',
         host: process.env.DB_HOST || 'localhost',
-        port: toInt(process.env.DB_PORT, 5432),
+        port: toInt(process.env.DB_PORT, 3306),
         name: process.env.DB_NAME || 'pos_brikin',
-        user: process.env.DB_USER || 'postgres',
-        password: process.env.DB_PASSWORD || 'postgres',
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
     },
 
     upload: {
