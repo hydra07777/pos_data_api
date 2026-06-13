@@ -74,7 +74,14 @@ exports.list = asyncH(async (req, res) => {
     const { count, rows } = await Order.findAndCountAll({
         where,
         include: [
-            { model: OrderItem, as: 'items' },
+            {
+                model: OrderItem,
+                as: 'items',
+                include: [
+                    { model: Product, as: 'product' },
+                    { model: ProductSize, as: 'size' },
+                ],
+            },
             { model: Payment, as: 'payment' },
             { model: Cashier, as: 'cashier', attributes: ['id', 'code', 'fullName'] },
         ],
