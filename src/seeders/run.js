@@ -93,9 +93,9 @@ const DRINKS = [
 
 const BRANDING = {
     id: 1,
-    companyName: 'BRIKIN',
+    companyName: 'JOAC',
     tagline: 'Specialty drinks & more',
-    logoText: 'P',
+    logoText: 'J',
     primaryColor: '#f6905f',
     secondaryColor: '#fdebe1',
     idNat: '01-G4701-N25076X',
@@ -107,8 +107,8 @@ const BRANDING = {
 };
 
 const CASHIERS = [
-    { code: 'AF666', fullName: 'Albert Flores', avatarUrl: '/cashier-avatar.png', role: 'cashier' },
-    { code: 'CESAR', fullName: 'cesar', role: 'cashier' },
+    { code: 'AF666', fullName: 'Albert Flores', avatarUrl: '/cashier-avatar.png', role: 'admin', password: 'brikin2024' },
+    { code: 'CESAR', fullName: 'cesar', role: 'manager', password: 'cesar2024' },
 ];
 
 (async () => {
@@ -162,9 +162,14 @@ const CASHIERS = [
         await Branding.upsert(BRANDING);
         console.log('[seed] branding upserted');
 
-        // --- Cashiers
+        // --- Cashiers (hash the password if provided)
         for (const c of CASHIERS) {
-            await Cashier.findOrCreate({ where: { code: c.code }, defaults: c });
+            const { password, ...rest } = c;
+            const defaults = {
+                ...rest,
+                ...(password ? { passwordHash: Cashier.hashPassword(password) } : {}),
+            };
+            await Cashier.findOrCreate({ where: { code: c.code }, defaults });
         }
         console.log(`[seed] ${CASHIERS.length} cashiers`);
 
