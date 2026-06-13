@@ -7,9 +7,9 @@ const { ok } = require('../utils/apiResponse');
 const asyncH = require('../utils/pick');
 
 const DEFAULTS = {
-    companyName: 'BRIKIN',
+    companyName: 'JOAC',
     tagline: 'Specialty drinks & more',
-    logoText: 'P',
+    logoText: 'J',
     primaryColor: '#f6905f',
     secondaryColor: '#fdebe1',
     idNat: '01-G4701-N25076X',
