@@ -1,6 +1,3 @@
-// ============================================================
-// Orders controller — main "sell" workflow
-// ============================================================
 const { Op } = require('sequelize');
 const {
     Order, OrderItem, Product, ProductSize, Payment, Customer, Cashier, DashboardLog,
@@ -66,9 +63,14 @@ exports.list = asyncH(async (req, res) => {
     if (status) where.status = status;
     if (cashierId) where.cashierId = cashierId;
     if (from || to) {
-        where.createdAt = {};
-        if (from) where.createdAt[Op.gte] = new Date(from);
-        if (to) where.createdAt[Op.lte] = new Date(to);
+        // The model defines `createdAt: 'created_at'` (snake_case in DB).
+        // Filtering with the JS attribute name `createdAt` is not translated
+        // to the actual column in `findAndCountAll`'s count subquery, which
+        // raised "Unknown column 'Order.createdAt'". Using the raw column
+        // name (as already done in dashboard/stockMovements controllers) works.
+        where.created_at = {};
+        if (from) where.created_at[Op.gte] = new Date(from);
+        if (to) where.created_at[Op.lte] = new Date(to);
     }
     const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
     const { count, rows } = await Order.findAndCountAll({
