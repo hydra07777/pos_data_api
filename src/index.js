@@ -10,8 +10,8 @@ const { sequelize } = require('./models');
         await sequelize.authenticate();
         console.log(`[db] connected (${env.db.dialect})`);
 
-        // Sync schema (alter keeps things in sync in dev)
-        await sequelize.sync({ alter: env.env !== 'production' });
+        // Sync schema without altering existing tables on every boot.
+        await sequelize.sync();
         console.log('[db] schema synced');
 
         app.listen(env.port, () => {

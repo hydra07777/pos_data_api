@@ -117,7 +117,7 @@ const CASHIERS = [
         console.log('[seed] connected');
 
         // sync schema first
-        await sequelize.sync({ alter: env.env !== 'production' });
+        await sequelize.sync();
         console.log('[seed] schema synced');
 
         // Models
