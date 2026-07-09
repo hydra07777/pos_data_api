@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const {
-    Order, OrderItem, Product, ProductSize, Payment, Customer, Cashier, DashboardLog,
+    Order, OrderItem, Product, ProductSize, Payment, Customer, Cashier, DashboardLog, PlatformSetting,
 } = require('../models');
 const HttpError = require('../utils/httpError');
 const { ok, created, noContent } = require('../utils/apiResponse');
@@ -128,6 +128,27 @@ exports.pay = asyncH(async (req, res) => {
     if (!order) throw HttpError.notFound('Order not found');
     if (order.status === 'paid') throw HttpError.conflict('Order already paid');
     if (order.status === 'cancelled') throw HttpError.conflict('Order was cancelled');
+
+    // ── Invoice quota check ──────────────────────────────────
+    // Before marking the order as paid (which generates a printable
+    // invoice), verify that the platform-wide invoice quota has not
+    // been reached. If the quota is disabled, skip the check.
+    const quotaRow = await PlatformSetting.findOne({ where: { key: 'invoice_quota' } });
+    const enabledRow = await PlatformSetting.findOne({ where: { key: 'quota_enabled' } });
+    const quotaEnabled = enabledRow ? enabledRow.value === 'true' : true;
+    if (quotaEnabled && quotaRow) {
+        const quota = parseInt(quotaRow.value, 10);
+        if (Number.isFinite(quota) && quota > 0) {
+            const paidCount = await Order.count({ where: { status: 'paid' } });
+            if (paidCount >= quota) {
+                throw HttpError.forbidden(
+                    `Quota de factures atteint (${paidCount}/${quota}). ` +
+                    `Contactez l'administrateur pour augmenter le quota.`
+                );
+            }
+        }
+    }
+    // ── End quota check ───────────────────────────────────────
 
     // Decrement stock + record movements
     for (const it of order.items) {
