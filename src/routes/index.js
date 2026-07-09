@@ -18,5 +18,6 @@ router.use('/themes', require('./themes.routes'));
 router.use('/fx-rates', require('./fxRates.routes'));
 router.use('/dashboard', require('./dashboard.routes'));
 router.use('/uploads', require('./uploads.routes'));
+router.use('/supervision', require('./supervision.routes'));
 
 module.exports = router;
