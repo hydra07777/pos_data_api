@@ -15,6 +15,7 @@ const Branding = require('./Branding')(sequelize);
 const PresetTheme = require('./PresetTheme')(sequelize);
 const FxRate = require('./FxRate')(sequelize);
 const DashboardLog = require('./DashboardLog')(sequelize);
+const PlatformSetting = require('./PlatformSetting')(sequelize);
 
 // ============================================================
 // Associations
@@ -80,4 +81,5 @@ module.exports = {
     PresetTheme,
     FxRate,
     DashboardLog,
+    PlatformSetting,
 };
