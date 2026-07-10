@@ -67,3 +67,33 @@ exports.recentActivity = asyncH(async (req, res) => {
     });
     return ok(res, rows);
 });
+
+// GET /dashboard/hourly  ->  [{ hour: 0..23, count, total }]
+exports.hourly = asyncH(async (_req, res) => {
+    const rows = await Order.findAll({
+        attributes: [
+            [fn('HOUR', col('created_at')), 'hour'],
+            [fn('COUNT', '*'), 'count'],
+            [fn('SUM', col('total_amount')), 'total'],
+        ],
+        where: { status: 'paid' },
+        group: [literal('hour')],
+        order: [literal('hour')],
+    });
+
+    const byHour = Array.from({ length: 24 }, (_, h) => ({
+        hour: h,
+        count: 0,
+        total: 0,
+    }));
+
+    for (const r of rows) {
+        const h = parseInt(r.get('hour'), 10);
+        if (h >= 0 && h < 24) {
+            byHour[h].count = parseInt(r.get('count'), 10);
+            byHour[h].total = parseFloat(r.get('total')) || 0;
+        }
+    }
+
+    return ok(res, byHour);
+});
