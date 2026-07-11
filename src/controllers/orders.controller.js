@@ -11,7 +11,7 @@ const env = require('../config/env');
 
 // Create an order in "pending" state (cart submitted)
 exports.create = asyncH(async (req, res) => {
-    const { items, customerId, currency = 'USD' } = req.body;
+    const { items, customerId, currency = 'CDF' } = req.body;
     if (!Array.isArray(items) || items.length === 0)
         throw HttpError.badRequest('items must be a non-empty array');
 

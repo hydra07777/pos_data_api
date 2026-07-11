@@ -17,6 +17,6 @@ exports.computeTotals = ({ items, taxRate = env.business.taxRate, fxRate = env.b
         taxAmount: round2(taxAmount),
         totalAmount: round2(total),
         fxRate,
-        equivalentFc: round2(total * fxRate),
+        equivalentFc: round2(total),
     };
 };
