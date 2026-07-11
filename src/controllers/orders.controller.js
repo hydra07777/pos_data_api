@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const {
-    Order, OrderItem, Product, ProductSize, Payment, Customer, Cashier, DashboardLog, PlatformSetting,
+    Order, OrderItem, Product, ProductSize, Payment, Customer, Cashier, DashboardLog, PlatformSetting, FxRate,
 } = require('../models');
 const HttpError = require('../utils/httpError');
 const { ok, created, noContent } = require('../utils/apiResponse');
@@ -19,7 +19,16 @@ exports.create = asyncH(async (req, res) => {
     if (!cashierId) throw HttpError.badRequest('cashierId is required');
 
     const built = await buildItems(items);
-    const totals = computeTotals({ items: built, fxRate: env.business.fxRate });
+
+    // Fetch the current FX rate from the database so each order
+    // stores the exact rate that was active at creation time.
+    const fxRow = await FxRate.findOne({
+        where: { code: 'USD' },
+        order: [['effective_at', 'DESC']],
+    });
+    const currentFxRate = fxRow ? parseFloat(fxRow.rateToFc) : env.business.fxRate;
+
+    const totals = computeTotals({ items: built, fxRate: currentFxRate });
 
     const order = await Order.create({
         orderNumber: await generateOrderNumber(Order),
